@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TodoList!{% endblock %}
+
+{% block body %}
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .Tasks {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #1e1e1e;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .AddTask {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .AddTask input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        margin-right: 10px;
+        border: 2px solid #333333;
+        border-radius: 4px;
+        background-color: #292929;
+        color: #ffffff;
+        font-size: 16px;
+    }
+
+    .AddTask button {
+        padding: 10px 20px;
+        background-color: #00aaff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .AddTask button:hover {
+        background-color: #007acc;
+    }
+
+    .AllTasks ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .AllTasks li {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #333333;
+        animation: slideIn 0.5s ease-in-out;
+    }
+
+    .AllTasks li:last-child {
+        border-bottom: none;
+    }
+
+    .AllTasks input[type="checkbox"] {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .AllTasks span {
+        font-size: 18px;
+        transition: color 0.3s, text-decoration 0.3s;
+    }
+
+    .AllTasks span[style*="line-through"] {
+        color: #777777;
+    }
+
+    .AllTasks li:hover span {
+        color: #00aaff;
+    }
+
+    form button[type="submit"] {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #e91e63;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    form button[type="submit"]:hover {
+        background-color: #c2185b;
+        transform: scale(1.05);
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="Tasks">
+    <form action="{{ path('add_task') }}" method="POST">
+        <div class="AddTask">
+            <input type="text" id="task" name="task" placeholder="Enter a task" required>
+            <button type="submit">Add Task</button>
+        </div>
+    </form>
+
+    <div class="AllTasks">
+        <ul>
+            {% for task in tasks %}
+                <li>
+                    <form action="{{ path('toggle_task', { id: task.id }) }}" method="POST" style="display: inline;">
+                        <input 
+                            type="checkbox" 
+                            {% if task.state %}checked{% endif %} 
+                            onchange="this.form.submit()">
+                        <span 
+                            {% if task.state %}style="text-decoration: line-through;"{% endif %}>
+                            {{ task.description }}
+                        </span>
+                    </form>
+                </li>
+            {% else %}
+                <li>No tasks available</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <form action="{{ path('delete_completed') }}" method="POST">
+        <button type="submit">Delete Done</button>
+    </form>
+</div>
+{% endblock %}
+
